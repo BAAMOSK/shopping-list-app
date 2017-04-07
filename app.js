@@ -25,7 +25,7 @@ let crud = {
     checkItem: function(id){
         let currentItem = this.state.items.findIndex(function(item){
           return id.toString() == item.id.toString();
-        });       
+        });
         this.state.items[currentItem].checked = !this.state.items[currentItem].checked;
     }
 }
@@ -38,16 +38,26 @@ function addItem(string) {
 
 //Views render view -- jQuery functions
 let view = {
+  filterHide: false,
   render: function(state){
+    let self = this;
     target = $(".shopping-list");
     target.html("");
-    let htmlString = "";      
+    let htmlString = "";
     state.items.forEach(function(val){
-      let checked = '';        
+      let checked = '';
         if(val.checked === true) {
             checked = 'shopping-item__checked';
-        } 
-      let htmlElement = `<li id="${val.id}">
+        }
+
+        let hide = "";
+        
+        if(self.filterHide && val.checked === true){
+          hide = "hidden"
+        }
+
+
+      let htmlElement = `<li id="${val.id}" class="${hide}">
         <span class="shopping-item ${checked}">${val.title}</span>
         <div class="shopping-item-controls">
           <button class="shopping-item-toggle">
@@ -88,4 +98,10 @@ $(".shopping-list").on("click", "button", function(val){
     crud.deleteItem($(this).closest("li").attr("id"));
     view.render(crud.state);
   }
+});
+
+$("#hiddenToggle").click(function(checkbox){
+  view.filterHide = $(this)[0].checked;
+  view.render(crud.state);
+
 })
