@@ -3,10 +3,8 @@ let appState = {
   items: []
 };
 
-
 //CRUD state modification functions
 let crud = {
-
     state: appState,
     highestID: 0,
 
@@ -28,6 +26,8 @@ let crud = {
         });
         this.state.items[currentItem].checked = !this.state.items[currentItem].checked;
     },
+    //finds index then checks to see if the id === item.id
+    //use the index to select the value in items array    
     updateItem: function(id, string) {
         let indexOfItem = this.state.items.findIndex(function(item) {
           return id.toString() === item.id.toString();
@@ -44,35 +44,40 @@ let crud = {
     }
 }
 
-function addItem(string) {
-    appState.items.push
-};
-
-
 
 //Views render view -- jQuery functions
 let view = {
   filterHide: false,
   filterString: "",
+  //render the <li>s
   render: function(state){
+    //self is a pointer to render    
     let self = this;
     target = $(".shopping-list");
+    //reset html to empty string
+    //gets rid of all elements on screen  
     target.html("");
+    //html concates the <li>s  
     let htmlString = "";
     //builds the html list
+    //loops through each value in items array  
     state.items.forEach(function(val){
+      //if empty string then no class is applied
+      //for the strike decoration of item    
       let checked = '';
         if(val.checked === true) {
             checked = 'shopping-item__checked';
         }
-
+        //if empty string then item will not be hidden
         let hide = "";
         if(self.filterHide){
           if(val.checked === true){
             hide = "hidden"
           }
         }
-
+        //if filter string is not empty, perform search
+        //used in search field
+        //sets all elements to hidden before search
         if(self.filterString !== ""){
           hide = "hidden";
           if(crud.searchFor(self.filterString,val)){
@@ -80,7 +85,11 @@ let view = {
           }
         }
 
-
+      //html tags that get rendered
+      //val id = id of item
+      //hide used with search makes elements disappear
+      //if passed hidden as string
+      //checked is used to assign shopping-item__checked class    
       let htmlElement = `<li id="${val.id}" class="${hide}">
         <input type="text" class="shopping-item ${checked}" value="${val.title}"></input>
         <div class="shopping-item-controls">
@@ -97,16 +106,15 @@ let view = {
     });
     target.append(htmlString);
   }
-
 };
+
 
 //Event listeners
 
-
-
-var submit = $('button');
-
-submit.click(function(event) {
+//prevents form resetting on form submission
+//adds item to items array
+//then render appState
+$('button').click(function(event) {
     var input = $(`#shopping-list-entry`);
     var inputValue = input.val();
     event.preventDefault();
@@ -114,6 +122,7 @@ submit.click(function(event) {
     view.render(crud.state);
 });
 
+//child buttons 'checked' and 'delete'
 $(".shopping-list").on("click", "button", function(val){
   if($(this).hasClass("shopping-item-toggle")){
     crud.checkItem($(this).closest("li").attr("id"));
@@ -124,12 +133,15 @@ $(".shopping-list").on("click", "button", function(val){
   }
 });
 
+//hides all checked list items
 $("#hiddenToggle").click(function(checkbox){
   view.filterHide = $(this)[0].checked;
   view.render(crud.state);
-
 })
 
+//listens for shopping list item gaining focus
+//if keypress is enter
+//then updates the item with new title
 $('.shopping-list').on('focusin', '.shopping-item', function(event) {
     $(this).addClass('with-borders');
     $(this).keypress(function(event) {
@@ -140,13 +152,16 @@ $('.shopping-list').on('focusin', '.shopping-item', function(event) {
     });
 });
 
+//if out of focus then remove the border
 $('.shopping-list').on('focusout', '.shopping-item', function(event) {
    $(this).removeClass('with-borders');
-    console.log('this works!');
 });
 
+//search function
+//listens for when search field gains focus
+//listens for keypress event
+//on keypress enter perform search
 $("#search").focusin(function(val){
-
   $(this).keypress(function(event) {
     self = this;
     if(event.which === 13) {
