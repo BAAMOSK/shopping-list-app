@@ -55,16 +55,20 @@ let view = {
 
 };
 
-
-
-
-
-
-
-
 //Event listeners
-function mainFunction() {
-    addItem()
-    checkItem()
-    deleteItem()
-}
+
+
+
+var submit = $('button');
+
+submit.click(function(event) {    
+    var input = $(`#shopping-list-entry`);
+    var inputValue = input.val();
+    event.preventDefault();
+    crud.addItem(inputValue);
+    view.render(crud.state);
+});
+    //addItem()
+    //checkItem()
+    //deleteItem()
+
