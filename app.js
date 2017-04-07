@@ -1,18 +1,18 @@
 //a state object
 let appState = {
-  items: []  
+  items: []
 };
 
 
 //CRUD state modification functions
 let crud = {
-    
+
     state: appState,
-    
+
     addItem: function(taskTitle){
         let item = {title: taskTitle, checked: false};
-        item.title = taskTitle;        
-        this.state.items.push(item);        
+        item.title = taskTitle;
+        this.state.items.push(item);
     },
     deleteItem: function(item){
         let currentItem = this.state.items;
@@ -30,9 +30,37 @@ function addItem(string) {
 
 
 //Views render view -- jQuery functions
-function renderView(app){
-    console.dir(app);
-}
+let view = {
+  render: function(state){
+    target = $(".shopping-list");
+    target.html("");
+    let htmlString = "";
+    state.items.forEach(function(val){
+      let htmlElement = `<li>
+        <span class="shopping-item">${val.title}</span>
+        <div class="shopping-item-controls">
+          <button class="shopping-item-toggle">
+            <span class="button-label">check</span>
+          </button>
+          <button class="shopping-item-delete">
+            <span class="button-label">delete</span>
+          </button>
+        </div>
+      </li>`
+      htmlString += htmlElement;
+
+    });
+    target.append(htmlString);
+  }
+
+};
+
+
+
+
+
+
+
 
 //Event listeners
 function mainFunction() {
