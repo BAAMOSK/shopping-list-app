@@ -30,9 +30,17 @@ let crud = {
     },
     updateItem: function(id, string) {
         let indexOfItem = this.state.items.findIndex(function(item) {
-          return id.toString() === item.id.toString();    
+          return id.toString() === item.id.toString();
         })
         this.state.items[indexOfItem].title = string;
+    },
+    //returns true if string found, else false;
+    searchFor: function(searchStr, val){
+      if(val.title.search(searchStr) != -1){
+        return true;
+      }else{
+        return false;
+      }
     }
 }
 
@@ -45,11 +53,13 @@ function addItem(string) {
 //Views render view -- jQuery functions
 let view = {
   filterHide: false,
+  filterString: "",
   render: function(state){
     let self = this;
     target = $(".shopping-list");
     target.html("");
     let htmlString = "";
+    //builds the html list
     state.items.forEach(function(val){
       let checked = '';
         if(val.checked === true) {
@@ -57,9 +67,17 @@ let view = {
         }
 
         let hide = "";
-        
-        if(self.filterHide && val.checked === true){
-          hide = "hidden"
+        if(self.filterHide){
+          if(val.checked === true){
+            hide = "hidden"
+          }
+        }
+
+        if(self.filterString !== ""){
+          hide = "hidden";
+          if(crud.searchFor(self.filterString,val)){
+            hide = "";
+          }
         }
 
 
@@ -103,7 +121,7 @@ $(".shopping-list").on("click", "button", function(val){
   }else if($(this).hasClass("shopping-item-delete")){
     crud.deleteItem($(this).closest("li").attr("id"));
     view.render(crud.state);
-  }   
+  }
 });
 
 $("#hiddenToggle").click(function(checkbox){
@@ -112,14 +130,14 @@ $("#hiddenToggle").click(function(checkbox){
 
 })
 
-$('.shopping-list').on('focusin', '.shopping-item', function(event) {    
+$('.shopping-list').on('focusin', '.shopping-item', function(event) {
     $(this).addClass('with-borders');
     $(this).keypress(function(event) {
         if(event.which === 13) {
             crud.updateItem($(this).closest('li').attr('id'), $(this).val());
             view.render(crud.state);
-        }        
-    });    
+        }
+    });
 });
 
 $('.shopping-list').on('focusout', '.shopping-item', function(event) {
@@ -127,7 +145,13 @@ $('.shopping-list').on('focusout', '.shopping-item', function(event) {
     console.log('this works!');
 });
 
+$("#search").focusin(function(val){
 
-
-
-
+  $(this).keypress(function(event) {
+    self = this;
+    if(event.which === 13) {
+      view.filterString = $(self).val();
+      view.render(crud.state);
+    }
+  });
+});
