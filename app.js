@@ -27,6 +27,12 @@ let crud = {
           return id.toString() == item.id.toString();
         });
         this.state.items[currentItem].checked = !this.state.items[currentItem].checked;
+    },
+    updateItem: function(id, string) {
+        let indexOfItem = this.state.items.findIndex(function(item) {
+          return id.toString() === item.id.toString();    
+        })
+        this.state.items[indexOfItem].title = string;
     }
 }
 
@@ -58,7 +64,7 @@ let view = {
 
 
       let htmlElement = `<li id="${val.id}" class="${hide}">
-        <span class="shopping-item ${checked}">${val.title}</span>
+        <input type="text" class="shopping-item ${checked}" value="${val.title}"></input>
         <div class="shopping-item-controls">
           <button class="shopping-item-toggle">
             <span class="button-label">check</span>
@@ -97,7 +103,7 @@ $(".shopping-list").on("click", "button", function(val){
   }else if($(this).hasClass("shopping-item-delete")){
     crud.deleteItem($(this).closest("li").attr("id"));
     view.render(crud.state);
-  }
+  }   
 });
 
 $("#hiddenToggle").click(function(checkbox){
@@ -105,3 +111,23 @@ $("#hiddenToggle").click(function(checkbox){
   view.render(crud.state);
 
 })
+
+$('.shopping-list').on('focusin', '.shopping-item', function(event) {    
+    $(this).addClass('with-borders');
+    $(this).keypress(function(event) {
+        if(event.which === 13) {
+            crud.updateItem($(this).closest('li').attr('id'), $(this).val());
+            view.render(crud.state);
+        }        
+    });    
+});
+
+$('.shopping-list').on('focusout', '.shopping-item', function(event) {
+   $(this).removeClass('with-borders');
+    console.log('this works!');
+});
+
+
+
+
+
