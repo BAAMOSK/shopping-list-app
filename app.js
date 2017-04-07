@@ -8,18 +8,28 @@ let appState = {
 let crud = {
 
     state: appState,
+    highestID: 0,
 
     addItem: function(taskTitle){
-        let item = {title: taskTitle, checked: false};
+        let item = {id: this.highestID, title: taskTitle, checked: false};
+        this.highestID++;
         item.title = taskTitle;
         this.state.items.push(item);
     },
-    deleteItem: function(item){
-        let currentItem = this.state.items;
-        currentItem.splice(currentItem.indexOf(item), 1);
+    deleteItem: function(id){
+        let currentItem = this.state.items.findIndex(function(item){
+          return id.toString() == item.id.toString();
+        });
+
+
+        console.log("Current Item is " + currentItem);
+
+        this.state.items.splice(currentItem, 1);
     },
     checkItem: function(item){
-        this.state.item.checked = !this.state.item.checked;
+      console.log("called check for " + item);
+      this.state.item.checked = !this.state.item.checked;
+
     }
 }
 
@@ -36,7 +46,7 @@ let view = {
     target.html("");
     let htmlString = "";
     state.items.forEach(function(val){
-      let htmlElement = `<li>
+      let htmlElement = `<li id="${val.id}">
         <span class="shopping-item">${val.title}</span>
         <div class="shopping-item-controls">
           <button class="shopping-item-toggle">
@@ -61,14 +71,25 @@ let view = {
 
 var submit = $('button');
 
-submit.click(function(event) {    
+submit.click(function(event) {
     var input = $(`#shopping-list-entry`);
     var inputValue = input.val();
     event.preventDefault();
     crud.addItem(inputValue);
     view.render(crud.state);
 });
+
+$(".shopping-list").on("click", "button", function(val){
+console.log($(this));
+  if($(this).hasClass("shopping-item-toggle")){
+    //crud.checkItem($(this))
+  }else if($(this).hasClass("shopping-item-delete")){
+    //console.log("This is what we're passing to delete:" + $(this).closest("li").attr("id"));
+    crud.deleteItem($(this).closest("li").attr("id"));
+    view.render(crud.state)
+  }
+  console.log("clicked a button");
+})
     //addItem()
     //checkItem()
     //deleteItem()
-
