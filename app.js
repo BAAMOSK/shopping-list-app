@@ -20,16 +20,13 @@ let crud = {
         let currentItem = this.state.items.findIndex(function(item){
           return id.toString() == item.id.toString();
         });
-
-
-        console.log("Current Item is " + currentItem);
-
         this.state.items.splice(currentItem, 1);
     },
-    checkItem: function(item){
-      console.log("called check for " + item);
-      this.state.item.checked = !this.state.item.checked;
-
+    checkItem: function(id){
+        let currentItem = this.state.items.findIndex(function(item){
+          return id.toString() == item.id.toString();
+        });       
+        this.state.items[currentItem].checked = !this.state.items[currentItem].checked;
     }
 }
 
@@ -44,10 +41,14 @@ let view = {
   render: function(state){
     target = $(".shopping-list");
     target.html("");
-    let htmlString = "";
+    let htmlString = "";      
     state.items.forEach(function(val){
+      let checked = '';        
+        if(val.checked === true) {
+            checked = 'shopping-item__checked';
+        } 
       let htmlElement = `<li id="${val.id}">
-        <span class="shopping-item">${val.title}</span>
+        <span class="shopping-item ${checked}">${val.title}</span>
         <div class="shopping-item-controls">
           <button class="shopping-item-toggle">
             <span class="button-label">check</span>
@@ -80,16 +81,11 @@ submit.click(function(event) {
 });
 
 $(".shopping-list").on("click", "button", function(val){
-console.log($(this));
   if($(this).hasClass("shopping-item-toggle")){
-    //crud.checkItem($(this))
+    crud.checkItem($(this).closest("li").attr("id"));
+      view.render(crud.state);
   }else if($(this).hasClass("shopping-item-delete")){
-    //console.log("This is what we're passing to delete:" + $(this).closest("li").attr("id"));
     crud.deleteItem($(this).closest("li").attr("id"));
-    view.render(crud.state)
+    view.render(crud.state);
   }
-  console.log("clicked a button");
 })
-    //addItem()
-    //checkItem()
-    //deleteItem()
